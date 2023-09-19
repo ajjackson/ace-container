@@ -1,0 +1,5 @@
+I'm having a bit of trouble getting some Julia-Python bridged packages
+to work in micromamba environments.
+
+Trying to debug this using containers and get a build to work. It's
+not going too well.
