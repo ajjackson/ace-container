@@ -31,8 +31,22 @@ RUN $JULIA -e 'using Pkg; pkg"registry add https://github.com/JuliaRegistries/Ge
 
 RUN PYTHON=$(which python) $JULIA -e 'using Pkg; Pkg.add(["ACE1", "ACE1x", "ASE", "JuLIP"])'
 
-RUN pip install git+https://github.com/casv2/pyjulip
-RUN pip install git+https://gitlab.com/ase/ase
-RUN pip install git+https://github.com/ACEsuit/ACEHAL
-RUN PATH=$(dirname ${JULIA}):$PATH python -c "import pyjulip"
+# Last working version:
+RUN pip install git+https://gitlab.com/ase/ase.git@2481069f
+# RUN pip install git+https://gitlab.com/ase/ase
 
+RUN pip install git+https://github.com/casv2/pyjulip
+RUN pip install git+https://github.com/ACEsuit/ACEHAL
+
+# Sanity check that things are loading
+# RUN PATH=$(dirname ${JULIA}):$PATH python -c "import pyjulip"
+
+COPY --chown=$MAMBA_USER:$MAMBA_USER entrypoint.sh /tmp/entrypoint.sh
+RUN chmod +x /tmp/entrypoint.sh
+
+COPY --chown=$MAMBA_USER:$MAMBA_USER emt_training.py /tmp/emt_training.py
+COPY --chown=$MAMBA_USER:$MAMBA_USER run_acehal.py /tmp/run_acehal.py
+
+RUN echo "export PATH=$(dirname ${JULIA}):$PATH" >> /home/mambauser/.bashrc
+
+ENTRYPOINT ["/tmp/entrypoint.sh"]
