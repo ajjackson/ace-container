@@ -12,13 +12,9 @@ ENV JULIA=/tmp/julia-${JULIA_VERSION}/bin/julia
 ENV JULIA_TARBALL=julia-${JULIA_VERSION}-linux-x86_64.tar.gz
 
 USER mambauser
-# Conda Julia doesn't install the SSL certificates correctly
-# RUN ln -s /etc/ssl/certs/ca-certificates.crt /opt/conda/share/julia/cert.pem
+RUN echo "export PATH=$(dirname ${JULIA}):\$PATH" >> /home/mambauser/.bashrc
 
-# Some dodgy dynamic linking conda doesn't set LD_LIBRARY_PATH
-# ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
-
-# Let's abandon Conda julia and install that separately
+# Let's abandon Conda julia and install from recommended package
 RUN wget https://julialang-s3.julialang.org/bin/linux/x64/${JULIA_BASE_VERSION}/${JULIA_TARBALL}
 RUN tar -xf $JULIA_TARBALL
 
@@ -31,22 +27,15 @@ RUN $JULIA -e 'using Pkg; pkg"registry add https://github.com/JuliaRegistries/Ge
 
 RUN PYTHON=$(which python) $JULIA -e 'using Pkg; Pkg.add(["ACE1", "ACE1x", "ASE", "JuLIP"])'
 
-# Last working version:
+# Last working version of ASE:
 RUN pip install git+https://gitlab.com/ase/ase.git@2481069f
 # RUN pip install git+https://gitlab.com/ase/ase
 
 RUN pip install git+https://github.com/casv2/pyjulip
 RUN pip install git+https://github.com/ACEsuit/ACEHAL
 
-# Sanity check that things are loading
-# RUN PATH=$(dirname ${JULIA}):$PATH python -c "import pyjulip"
-
 COPY --chown=$MAMBA_USER:$MAMBA_USER entrypoint.sh /tmp/entrypoint.sh
 RUN chmod +x /tmp/entrypoint.sh
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER emt_training.py /tmp/emt_training.py
 COPY --chown=$MAMBA_USER:$MAMBA_USER run_acehal.py /tmp/run_acehal.py
-
-RUN echo "export PATH=$(dirname ${JULIA}):$PATH" >> /home/mambauser/.bashrc
-
-ENTRYPOINT ["/tmp/entrypoint.sh"]

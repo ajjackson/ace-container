@@ -11,11 +11,11 @@ from ase.calculators.emt import EMT
 import ase.io
 from sklearn.linear_model import BayesianRidge
 
-def tweak_metadata(training_data: Sequence[Atoms]) -> None:
-    for atoms in training_data:
-        atoms.info["energy"] = atoms.get_potential_energy()
-        atoms.arrays["forces"] = atoms.get_forces()
-        atoms.info["virial"] = -atoms.get_stress(voigt=False) * atoms.cell.volume
+# def tweak_metadata(training_data: Sequence[Atoms]) -> None:
+#     for atoms in training_data:
+#         atoms.info["energy"] = atoms.get_potential_energy()
+#         atoms.arrays["forces"] = atoms.get_forces()
+#         atoms.info["virial"] = -atoms.get_stress(voigt=False) * atoms.cell.volume
 
 
 def get_e0s(atoms, calc):
@@ -34,7 +34,7 @@ def get_e0s(atoms, calc):
 def main():
     fit_configs = ase.io.read("rattled_ev.extxyz", index=":")
     supercells = ase.io.read("supercells.extxyz", index=":")
-    tweak_metadata(fit_configs)
+    # tweak_metadata(fit_configs)
 
     data_keys = {"E": "energy", "F": "forces", "V": "virial", "Fmax": 15.0}
 
