@@ -34,8 +34,5 @@ RUN pip install git+https://gitlab.com/ase/ase.git@2481069f
 RUN pip install git+https://github.com/casv2/pyjulip
 RUN pip install git+https://github.com/ACEsuit/ACEHAL
 
-COPY --chown=$MAMBA_USER:$MAMBA_USER entrypoint.sh /tmp/entrypoint.sh
-RUN chmod +x /tmp/entrypoint.sh
-
 COPY --chown=$MAMBA_USER:$MAMBA_USER emt_training.py /tmp/emt_training.py
 COPY --chown=$MAMBA_USER:$MAMBA_USER run_acehal.py /tmp/run_acehal.py
